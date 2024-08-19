@@ -29,18 +29,8 @@ jobs:
       - name: Build Docker image
         run: docker build -t demo-service .
 
-      - name: Tag Docker image based on branch
-        run: |
-          if [ "${{ github.event.inputs.branch }}" = "main" ]; then
-            docker tag demo-service ${{ secrets.DOCKER_USERNAME }}/demo-service-prod:${{ github.event.inputs.tag }}
-          else
-            docker tag demo-service ${{ secrets.DOCKER_USERNAME }}/demo-service:${{ github.event.inputs.tag }}
-          fi
+      - name: Tag Docker image
+        run: docker tag examplelog ${{secrets.DOCKER_USERNAME}}/demo-service:${{github.event.inputs.tag}}
 
-      - name: Push Docker image based on branch
-        run: |
-          if [ "${{ github.event.inputs.branch }}" = "main" ]; then
-            docker push ${{ secrets.DOCKER_USERNAME }}/demo-service-prod:${{ github.event.inputs.tag }}
-          else
-            docker push ${{ secrets.DOCKER_USERNAME }}/demo-service:${{ github.event.inputs.tag }}
-          fi
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/demo-service:${{github.event.inputs.tag}}
