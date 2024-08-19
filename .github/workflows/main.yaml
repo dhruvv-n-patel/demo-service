@@ -30,7 +30,7 @@ jobs:
         run: docker build -t demoservice .
 
       - name: Tag Docker image
-        run: docker tag examplelog ${{secrets.DOCKER_USERNAME}}/demoservice:${{github.event.inputs.tag}}
+        run: docker tag demoservice ${{secrets.DOCKER_USERNAME}}/demoservice:${{github.event.inputs.tag}}
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/demoservice:${{github.event.inputs.tag}}
