@@ -1,0 +1,46 @@
+name: Docker Build and Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch name'
+        required: true
+        default: 'main'  # Default branch name
+      tag:
+        description: 'Enter the tag for the Docker image'
+        required: true
+
+jobs:
+  build-and-push:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
+        run: docker build -t demo-service .
+
+      - name: Tag Docker image based on branch
+        run: |
+          if [ "${{ github.event.inputs.branch }}" = "main" ]; then
+            docker tag demo-service ${{ secrets.DOCKER_USERNAME }}/demo-service-prod:${{ github.event.inputs.tag }}
+          else
+            docker tag demo-service ${{ secrets.DOCKER_USERNAME }}/demo-service:${{ github.event.inputs.tag }}
+          fi
+
+      - name: Push Docker image based on branch
+        run: |
+          if [ "${{ github.event.inputs.branch }}" = "main" ]; then
+            docker push ${{ secrets.DOCKER_USERNAME }}/demo-service-prod:${{ github.event.inputs.tag }}
+          else
+            docker push ${{ secrets.DOCKER_USERNAME }}/demo-service:${{ github.event.inputs.tag }}
+          fi
